@@ -3,6 +3,7 @@ import { Calendar, Clock, Book, ChevronRight, CheckCircle, BarChart2, RotateCcw,
 import { useNavigate } from 'react-router-dom';
 import { resetUserState } from '../utils/userState';
 import { logStudyActivity } from '../utils/attendance';
+import { fetchApi } from '../services/api';
 
 const MyPlan = () => {
     const navigate = useNavigate();
@@ -30,12 +31,10 @@ const MyPlan = () => {
                     setLoading(true);
                     try {
                         const defaultProfile = { year: '2nd Year', stream: 'MPC', board: 'TS (Telangana)' };
-                        const response = await fetch('/api/plan/generate', {
+                        const data = await fetchApi('/api/plan/generate', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ userProfile: defaultProfile })
                         });
-                        const data = await response.json();
                         if (data.plan) {
                             setPlan(data.plan);
                             localStorage.setItem('userPlan', JSON.stringify(data.plan));
@@ -62,16 +61,14 @@ const MyPlan = () => {
         setModalStartTime(Date.now()); // Start timer
 
         try {
-            const response = await fetch('/api/learn/topic', {
+            const data = await fetchApi('/api/learn/topic', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     topic,
                     subject,
                     year: plan?.student_type || '2nd Year'
                 })
             });
-            const data = await response.json();
             setTopicContent(data.content);
         } catch (error) {
             console.error("Failed to fetch content", error);

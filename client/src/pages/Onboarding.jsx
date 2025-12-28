@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, GraduationCap, Brain, CheckCircle } from 'lucide-react';
 import { saveUserState, saveUserPlan } from '../utils/userState';
+import { fetchApi } from '../services/api';
 
 const Onboarding = () => {
     const navigate = useNavigate();
@@ -32,9 +33,8 @@ const Onboarding = () => {
                 // "No Idea" Path -> Generate Syllabus-Aligned Foundational Plan
                 setLoading(true);
                 try {
-                    const response = await fetch('/api/plan/generate', {
+                    const data = await fetchApi('/api/plan/generate', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             userProfile: {
                                 ...formData,
@@ -42,7 +42,6 @@ const Onboarding = () => {
                             }
                         })
                     });
-                    const data = await response.json();
 
                     if (data.plan) {
                         saveUserState({

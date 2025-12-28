@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, X, MessageCircle, Bot } from 'lucide-react';
+import { fetchApi } from '../services/api';
 
 const ChatWindow = ({ onClose }) => {
     const [messages, setMessages] = useState([
@@ -27,12 +28,10 @@ const ChatWindow = ({ onClose }) => {
             // Prepare history for context
             const history = messages.map(m => ({ role: m.role, content: m.content }));
 
-            const response = await fetch('/api/chat', {
+            const data = await fetchApi('/api/chat', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ history, message: input })
             });
-            const data = await response.json();
 
             setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
         } catch (error) {

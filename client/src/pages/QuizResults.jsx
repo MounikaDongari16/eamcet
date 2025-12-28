@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Trophy, Target, Clock, Zap, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { saveUserState, saveUserPlan } from '../utils/userState';
+import { fetchApi } from '../services/api';
 
 const QuizResults = () => {
     const location = useLocation();
@@ -31,16 +32,13 @@ const QuizResults = () => {
     const generatePlan = async () => {
         setGenerating(true);
         try {
-            const response = await fetch('/api/plan/generate', {
+            const data = await fetchApi('/api/plan/generate', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userProfile: userProfile || { year: '2nd Year', stream: 'MPC' },
                     quizResults: results
                 })
             });
-
-            const data = await response.json();
             if (data.plan) {
                 setPlan(data.plan);
                 localStorage.setItem('userPlan', JSON.stringify(data.plan));
@@ -209,15 +207,13 @@ const QuizResults = () => {
                                     onClick={async () => {
                                         setGenLoading(true);
                                         try {
-                                            const response = await fetch('/api/plan/finalize', {
+                                            const data = await fetchApi('/api/plan/finalize', {
                                                 method: 'POST',
-                                                headers: { 'Content-Type': 'application/json' },
                                                 body: JSON.stringify({
                                                     userProfile: userProfile || { year: '2nd Year', stream: 'MPC' },
                                                     quizResults: results
                                                 })
                                             });
-                                            const data = await response.json();
                                             if (data.plan) {
                                                 saveUserState({ study_plan_exists: true, diagnostic_completed: true });
                                                 saveUserPlan(data.plan);

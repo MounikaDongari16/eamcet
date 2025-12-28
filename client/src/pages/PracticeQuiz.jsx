@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Clock, CheckCircle, XCircle, ArrowRight, RotateCcw, TrendingUp, Target } from 'lucide-react';
+import { fetchApi } from '../services/api';
 
 const PracticeQuiz = () => {
     const location = useLocation();
@@ -44,12 +45,10 @@ const PracticeQuiz = () => {
     const fetchPracticeQuestions = async () => {
         setLoading(true);
         try {
-            const response = await fetch('/api/practice/questions', {
+            const data = await fetchApi('/api/practice/questions', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ topic, subject, count: 10 })
             });
-            const data = await response.json();
             setQuestions(data.questions || []);
         } catch (error) {
             console.error('Failed to fetch practice questions:', error);

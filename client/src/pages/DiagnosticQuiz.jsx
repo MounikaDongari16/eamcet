@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Timer, BrainCircuit, Sparkles, Crosshair } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { fetchApi } from '../services/api';
 
 const Target = ({ option, index, onSelect, position }) => {
     return (
@@ -247,12 +248,10 @@ const DiagnosticQuiz = () => {
             try {
                 const history = JSON.parse(localStorage.getItem('quizHistory') || '[]');
 
-                const response = await fetch('/api/quiz/generate', {
+                const data = await fetchApi('/api/quiz/generate', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ stream, year, history })
                 });
-                const data = await response.json();
                 if (data.questions) {
                     setQuestions(data.questions);
                 } else {
@@ -321,12 +320,10 @@ const DiagnosticQuiz = () => {
     const finishQuiz = async (finalAnswers) => {
         setSubmitting(true);
         try {
-            const response = await fetch('/api/quiz/analyze', {
+            const analysis = await fetchApi('/api/quiz/analyze', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ answers: finalAnswers })
             });
-            const analysis = await response.json();
 
             navigate('/quiz-results', {
                 state: {
