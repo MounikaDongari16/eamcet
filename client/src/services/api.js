@@ -1,10 +1,10 @@
 const BASE_URL = import.meta.env.VITE_API_URL || '';
 
 export const fetchApi = async (endpoint, options = {}) => {
-    const url = `${BASE_URL}${endpoint}`;
-
-    // Ensure relative URLs are handled correctly if BASE_URL is empty (local dev)
-    const finalUrl = url.startsWith('/') ? url : `/${url}`;
+    // Prevent double slashes and handle trailing slashes in BASE_URL
+    const cleanBase = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url = `${cleanBase}${cleanEndpoint}`;
 
     const defaultOptions = {
         headers: {
@@ -14,7 +14,7 @@ export const fetchApi = async (endpoint, options = {}) => {
         ...options,
     };
 
-    const response = await fetch(finalUrl, defaultOptions);
+    const response = await fetch(url, defaultOptions);
 
     if (!response.ok) {
         const errorText = await response.text();
